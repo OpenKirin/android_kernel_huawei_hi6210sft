@@ -420,7 +420,7 @@ void __enable_irq(struct irq_desc *desc)
 		/* Prevent probing on this irq: */
 		irq_settings_set_noprobe(desc);
 		irq_enable(desc);
-		check_irq_resend(desc, irq);
+		check_irq_resend(desc);
 		/* fall-through */
 	}
 	default:

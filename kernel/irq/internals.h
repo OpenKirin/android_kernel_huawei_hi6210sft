@@ -87,7 +87,7 @@ irqreturn_t handle_irq_event_percpu(struct irq_desc *desc, struct irqaction *act
 irqreturn_t handle_irq_event(struct irq_desc *desc);
 
 /* Resending of interrupts :*/
-void check_irq_resend(struct irq_desc *desc, unsigned int irq);
+void check_irq_resend(struct irq_desc *desc);
 bool irq_wait_for_poll(struct irq_desc *desc);
 
 #ifdef CONFIG_PROC_FS
