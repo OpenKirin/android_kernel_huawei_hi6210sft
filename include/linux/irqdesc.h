@@ -93,6 +93,11 @@ extern struct irq_desc irq_desc[NR_IRQS];
 
 #ifdef CONFIG_GENERIC_HARDIRQS
 
+static inline unsigned int irq_desc_get_irq(struct irq_desc *desc)
+{
+	return desc->irq_data.irq;
+}
+
 static inline struct irq_data *irq_desc_get_irq_data(struct irq_desc *desc)
 {
 	return &desc->irq_data;
