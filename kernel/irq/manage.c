@@ -352,7 +352,7 @@ setup_affinity(unsigned int irq, struct irq_desc *desc, struct cpumask *mask)
 }
 #endif
 
-void __disable_irq(struct irq_desc *desc, unsigned int irq)
+void __disable_irq(struct irq_desc *desc)
 {
 	if (!desc->depth++)
 		irq_disable(desc);
@@ -365,7 +365,7 @@ static int __disable_irq_nosync(unsigned int irq)
 
 	if (!desc)
 		return -EINVAL;
-	__disable_irq(desc, irq);
+	__disable_irq(desc);
 	irq_put_desc_busunlock(desc, flags);
 	return 0;
 }
@@ -406,12 +406,13 @@ void disable_irq(unsigned int irq)
 }
 EXPORT_SYMBOL(disable_irq);
 
-void __enable_irq(struct irq_desc *desc, unsigned int irq)
+void __enable_irq(struct irq_desc *desc)
 {
 	switch (desc->depth) {
 	case 0:
  err_out:
-		WARN(1, KERN_WARNING "Unbalanced enable for IRQ %d\n", irq);
+		WARN(1, KERN_WARNING "Unbalanced enable for IRQ %d\n",
+		     irq_desc_get_irq(desc));
 		break;
 	case 1: {
 		if (desc->istate & IRQS_SUSPENDED)
@@ -449,7 +450,7 @@ void enable_irq(unsigned int irq)
 		 KERN_ERR "enable_irq before setup/request_irq: irq %u\n", irq))
 		goto out;
 
-	__enable_irq(desc, irq);
+	__enable_irq(desc);
 out:
 	irq_put_desc_busunlock(desc, flags);
 }
@@ -1130,7 +1131,7 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
 	 */
 	if (shared && (desc->istate & IRQS_SPURIOUS_DISABLED)) {
 		desc->istate &= ~IRQS_SPURIOUS_DISABLED;
-		__enable_irq(desc, irq);
+		__enable_irq(desc);
 	}
 
 	raw_spin_unlock_irqrestore(&desc->lock, flags);
