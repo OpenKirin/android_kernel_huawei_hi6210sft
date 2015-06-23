@@ -60,8 +60,7 @@ enum {
 
 #define irq_data_to_desc(data)	container_of(data, struct irq_desc, irq_data)
 
-extern int __irq_set_trigger(struct irq_desc *desc, unsigned int irq,
-		unsigned long flags);
+extern int __irq_set_trigger(struct irq_desc *desc, unsigned long flags);
 extern void __disable_irq(struct irq_desc *desc);
 extern void __enable_irq(struct irq_desc *desc);
 
