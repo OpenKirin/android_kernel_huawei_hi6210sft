@@ -1582,18 +1582,13 @@ struct ion_handle *ion_import_dma_buf(struct ion_client *client, int fd)
 		mutex_unlock(&client->lock);
 		goto end;
 	}
-	mutex_unlock(&client->lock);
 
 	handle = ion_handle_create(client, buffer);
 	if (IS_ERR(handle)) {
-		pr_err("%s: ion handle create failed!\n", __func__);
+		mutex_unlock(&client->lock);
 		goto end;
 	}
-	else {
-		handle->import = 1;
-	}
 
-	mutex_lock(&client->lock);
 	ret = ion_handle_add(client, handle);
 	mutex_unlock(&client->lock);
 	if (ret) {
