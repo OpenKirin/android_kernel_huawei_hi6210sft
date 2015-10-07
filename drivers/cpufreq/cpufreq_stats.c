@@ -535,6 +535,18 @@ static void create_all_freq_table(void)
 	return;
 }
 
+static void free_all_freq_table(void)
+{
+	if (all_freq_table) {
+		if (all_freq_table->freq_table) {
+			kfree(all_freq_table->freq_table);
+			all_freq_table->freq_table = NULL;
+		}
+		kfree(all_freq_table);
+		all_freq_table = NULL;
+	}
+}
+
 static void add_all_freq_table(unsigned int freq)
 {
 	unsigned int size;
@@ -757,8 +769,11 @@ static int cpufreq_stats_setup(void)
 		return ret;
 
 	register_hotcpu_notifier(&cpufreq_stat_cpu_notifier);
-	for_each_online_cpu(cpu)
+    create_all_freq_table();
+	for_each_online_cpu(cpu) {
 		cpufreq_update_policy(cpu);
+		cpufreq_stats_create_table(cpu);
+	}
 
 	ret = cpufreq_register_notifier(&notifier_trans_block,
 				CPUFREQ_TRANSITION_NOTIFIER);
@@ -768,10 +783,10 @@ static int cpufreq_stats_setup(void)
 		unregister_hotcpu_notifier(&cpufreq_stat_cpu_notifier);
 		for_each_online_cpu(cpu)
 			cpufreq_stats_free_table(cpu);
+			free_all_freq_table();
 		return ret;
 	}
 
-	create_all_freq_table();
 	ret = cpufreq_sysfs_create_file(&_attr_all_time_in_state.attr);
 	if (ret)
 		pr_warn("Cannot create sysfs file for cpufreq stats\n");
