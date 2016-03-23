@@ -55,13 +55,6 @@ enum {LAST_NORM, LAST_ROOT, LAST_DOT, LAST_DOTDOT, LAST_BIND};
 #define LOOKUP_JUMPED		0x1000
 #define LOOKUP_ROOT		0x2000
 #define LOOKUP_EMPTY		0x4000
-/* BEGIN PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci begin*/
-#ifdef CONFIG_SDCARD_FS_CI_SEARCH
-#define LOOKUP_CASE_INSENSITIVE 0x8000
-#endif
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci end*/
-/* END PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
 
 extern int user_path_at(int, const char __user *, unsigned, struct path *);
 extern int user_path_at_empty(int, const char __user *, unsigned, struct path *, int *empty);
