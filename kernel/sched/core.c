@@ -73,9 +73,6 @@
 #include <linux/init_task.h>
 #include <linux/binfmts.h>
 #include <linux/context_tracking.h>
-#ifdef CONFIG_HUAWEI_MSG_POLICY
-#include <huawei_platform/power/msgnotify.h>
-#endif
 #include <asm/switch_to.h>
 #include <asm/tlb.h>
 #include <asm/irq_regs.h>
@@ -3333,10 +3330,6 @@ need_resched:
 		rq->nr_switches++;
 		rq->curr = next;
 		++*switch_count;
-
-#ifdef CONFIG_HUAWEI_MSG_POLICY
-		update_msg_stat(cpu, prev, next);
-#endif
 
 		context_switch(rq, prev, next); /* unlocks the rq */
 		/*
