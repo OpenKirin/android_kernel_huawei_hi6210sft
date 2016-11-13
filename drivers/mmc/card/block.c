@@ -92,13 +92,10 @@ EXPORT_SYMBOL(emmc_dclient);
 #endif
 /* END PN:DTS2014081103718 , Modified by d00168349, 2014/08/11 */
 MODULE_ALIAS("mmc:block");
-/*not referenced,modified for pclint*/
-/*
 #ifdef MODULE_PARAM_PREFIX
 #undef MODULE_PARAM_PREFIX
 #endif
 #define MODULE_PARAM_PREFIX "mmcblk."
-*/
 #ifdef CONFIG_BALONG_MTD
 enum{
 	MODEMOM_PARTITION = 0,
