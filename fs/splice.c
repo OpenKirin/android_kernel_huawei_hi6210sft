@@ -635,6 +635,10 @@ ssize_t default_file_splice_read(struct file *in, loff_t *ppos,
 		.spd_release = spd_release_page,
 	};
 
+	if (unlikely(!(in->f_mode & FMODE_SPLICE_READ)))
+		return -EINVAL;
+
+
 	if (splice_grow_spd(pipe, &spd))
 		return -ENOMEM;
 
