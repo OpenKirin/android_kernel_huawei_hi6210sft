@@ -609,64 +609,64 @@ void codec_reg_write(unsigned int reg, unsigned int value)
 /*****************************************************************************
   Sound Controls
 *****************************************************************************/
-/* LINEPGAL GAIN(LINEPGAL_GAIN<3:0>)£»
- * range:-14dB~16dB¡£
- * step:2dB¡£
- * 0000:-14dB£»
- * 0001:-12dB£»
- * 0010:-10dB£»
- * ¡­¡­
- * 0111:0dB£»
- * ¡­¡­
- * 1110:14dB£»
- * 1111:16dB£» */
+/* LINEPGAL GAIN(LINEPGAL_GAIN<3:0>)\A3\BB
+ * range:-14dB~16dB\A1\A3
+ * step:2dB\A1\A3
+ * 0000:-14dB\A3\BB
+ * 0001:-12dB\A3\BB
+ * 0010:-10dB\A3\BB
+ * \A1\AD\A1\AD
+ * 0111:0dB\A3\BB
+ * \A1\AD\A1\AD
+ * 1110:14dB\A3\BB
+ * 1111:16dB\A3\BB */
 static DECLARE_TLV_DB_SCALE(hissc_smt_linepgal_gain_tlv, -1400, 200, 0);
 
-/* LINEPGAR GAIN(LINEPGAR_GAIN<3:0>)£»
- * range:-14dB~16dB¡£
- * step:2dB¡£
- * 0000:-14dB£»
- * 0001:-12dB£»
- * 0010:-10dB£»
- * ¡­¡­
- * 0111:0dB£»
- * ¡­¡­
- * 1110:14dB£»
- * 1111:16dB£» */
+/* LINEPGAR GAIN(LINEPGAR_GAIN<3:0>)\A3\BB
+ * range:-14dB~16dB\A1\A3
+ * step:2dB\A1\A3
+ * 0000:-14dB\A3\BB
+ * 0001:-12dB\A3\BB
+ * 0010:-10dB\A3\BB
+ * \A1\AD\A1\AD
+ * 0111:0dB\A3\BB
+ * \A1\AD\A1\AD
+ * 1110:14dB\A3\BB
+ * 1111:16dB\A3\BB */
 static DECLARE_TLV_DB_SCALE(hissc_smt_linepgar_gain_tlv, -1400, 200, 0);
 
-/* AUXPGA GAIN(AUXPGA_GAIN<2:0>)£»
- * range:0dB~14dB¡£
- * step:2dB¡£
- * 000: 0dB£»
- * 001: 2dB£»
- * 010: 4dB£»
- * 011: 6dB£»
- * 100: 8dB£»
- * 101: 10dB£»
- * 110: 12dB£»
- * 111: 14dB£» */
+/* AUXPGA GAIN(AUXPGA_GAIN<2:0>)\A3\BB
+ * range:0dB~14dB\A1\A3
+ * step:2dB\A1\A3
+ * 000: 0dB\A3\BB
+ * 001: 2dB\A3\BB
+ * 010: 4dB\A3\BB
+ * 011: 6dB\A3\BB
+ * 100: 8dB\A3\BB
+ * 101: 10dB\A3\BB
+ * 110: 12dB\A3\BB
+ * 111: 14dB\A3\BB */
 static DECLARE_TLV_DB_SCALE(hissc_smt_auxpga_gain_tlv, 0, 200, 0);
 
-/* MAINPGA GAIN(MAINPGA_GAIN<2:0>)£»
- * range:0dB~14dB¡£
- * step:2dB¡£
- * 000: 0dB£»
- * 001: 2dB£»
- * 010: 4dB£»
- * 011: 6dB£»
- * 100: 8dB£»
- * 101: 10dB£»
- * 110: 12dB£»
- * 111: 14dB£» */
+/* MAINPGA GAIN(MAINPGA_GAIN<2:0>)\A3\BB
+ * range:0dB~14dB\A1\A3
+ * step:2dB\A1\A3
+ * 000: 0dB\A3\BB
+ * 001: 2dB\A3\BB
+ * 010: 4dB\A3\BB
+ * 011: 6dB\A3\BB
+ * 100: 8dB\A3\BB
+ * 101: 10dB\A3\BB
+ * 110: 12dB\A3\BB
+ * 111: 14dB\A3\BB */
 static DECLARE_TLV_DB_SCALE(hissc_smt_mainpga_gain_tlv, 0, 200, 0);
 
-/* HeadphoneL GAIN(HSL_GAIN<3:0>)£»
- * range:-20dB~-0dB¡£
- * step:1.5dB¡£
- * 0000:-20dB£»
- * 0001:-18dB£»
- * 0010:-16.5dB£»
+/* HeadphoneL GAIN(HSL_GAIN<3:0>)\A3\BB
+ * range:-20dB~-0dB\A1\A3
+ * step:1.5dB\A1\A3
+ * 0000:-20dB\A3\BB
+ * 0001:-18dB\A3\BB
+ * 0010:-16.5dB\A3\BB
  * 0011: -15dB;
  * 0100:-13.5dB;
  * 0101:-12dB;
@@ -682,12 +682,12 @@ static DECLARE_TLV_DB_SCALE(hissc_smt_mainpga_gain_tlv, 0, 200, 0);
  * 1111:0dB; */
 static DECLARE_TLV_DB_SCALE(hissc_smt_hsl_gain_tlv, -2000, 150, 0);
 
-/* HeadphoneR GAIN(HSR_GAIN<3:0>)£»
- * range:-20dB~-0dB¡£
- * step:1.5dB¡£
- * 0000:-20dB£»
- * 0001:-18dB£»
- * 0010:-16.5dB£»
+/* HeadphoneR GAIN(HSR_GAIN<3:0>)\A3\BB
+ * range:-20dB~-0dB\A1\A3
+ * step:1.5dB\A1\A3
+ * 0000:-20dB\A3\BB
+ * 0001:-18dB\A3\BB
+ * 0010:-16.5dB\A3\BB
  * 0011: -15dB;
  * 0100:-13.5dB;
  * 0101:-12dB;
@@ -703,12 +703,12 @@ static DECLARE_TLV_DB_SCALE(hissc_smt_hsl_gain_tlv, -2000, 150, 0);
  * 1111:0dB; */
 static DECLARE_TLV_DB_SCALE(hissc_smt_hsr_gain_tlv, -2000, 150, 0);
 
-/* EAR GAIN(EAR_GAIN<5:0>)£»
- * range:-20dB~-6dB¡£
- * step:2dB¡£
- * 0000:-20dB£»
- * 0001:-18dB£»
- * 0010:-16dB£»
+/* EAR GAIN(EAR_GAIN<5:0>)\A3\BB
+ * range:-20dB~-6dB\A1\A3
+ * step:2dB\A1\A3
+ * 0000:-20dB\A3\BB
+ * 0001:-18dB\A3\BB
+ * 0010:-16dB\A3\BB
  * 0011: -14dB;
  * 0100:-12dB;
  * 0101:-10dB;
@@ -1723,13 +1723,13 @@ static int hissc_smt_hsmicb_power_mode_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/* to avoid irq while MBHD_COMP power up£¬mask the irq then clean it */
+		/* to avoid irq while MBHD_COMP power up\A3\ACmask the irq then clean it */
 		irq_mask = hissc_reg_read(g_codec, HISSC_SMT_ANA_IRQM_REG0_ADDR);
 		hissc_irqs_mask_set(irq_mask | IRQ_MSK_COMP);
 		hissc_hs_micbias_work_enable(g_codec,true);
 		msleep(25);
 
-		/* to avoid irq while MBHD_COMP power up£¬mask the irq then clean it */
+		/* to avoid irq while MBHD_COMP power up\A3\ACmask the irq then clean it */
 		hissc_irqs_clr(IRQ_MSK_COMP);
 		hissc_irqs_mask_clr(IRQ_MSK_BTN_NOR);
 		break;
@@ -2543,7 +2543,7 @@ static const char *hissc_smt_mainpga_sel_mux_texts[] = {
 	"MUTE",
 	"MIC",
 	"HP_MIC",
-	//"MUTE", /* 11:MUTE£» */
+	//"MUTE", /* 11:MUTE\A3\BB */
 };
 
 static const struct soc_enum hissc_smt_mainpga_sel_mux_enum =
@@ -3620,7 +3620,7 @@ static void hissc_hs_micbias_pd(struct snd_soc_codec *codec, bool enable)
 {
 	unsigned int irq_mask = 0;
 
-	/* to avoid irq while MBHD_COMP power up£¬mask the irq then clean it */
+	/* to avoid irq while MBHD_COMP power up\A3\ACmask the irq then clean it */
 	irq_mask = hissc_reg_read(codec, HISSC_SMT_ANA_IRQM_REG0_ADDR);
 	hissc_irqs_mask_set(irq_mask | IRQ_MSK_COMP);
 
@@ -4038,7 +4038,7 @@ static int hs_plug_in_detect_func(struct snd_soc_codec *codec)
 		ret = 0;
 	}
 
-	/* to avoid irq while MBHD_COMP power up£¬mask the irq then clean it */
+	/* to avoid irq while MBHD_COMP power up\A3\ACmask the irq then clean it */
 	hissc_irqs_clr(IRQ_MSK_COMP);
 	hissc_irqs_mask_clr(IRQ_MSK_BTN_NOR);
 	mutex_unlock(&priv->plug_mutex);
@@ -4129,7 +4129,7 @@ static int hs_btn_down_detect_func(struct snd_soc_codec *codec)
 	hissc_hs_micbias_hkadc_enable(codec,false);
 	mutex_unlock(&priv->hkadc_mutex);
 	msleep(30);
-	/* to avoid irq while MBHD_COMP power up£¬mask the irq then clean it */
+	/* to avoid irq while MBHD_COMP power up\A3\ACmask the irq then clean it */
 	hissc_irqs_clr(IRQ_MSK_COMP);
 	hissc_irqs_mask_clr(IRQ_MSK_BTN_NOR);
 	logi("mask clean");
@@ -4630,7 +4630,7 @@ static void hissc_state_dp(char *buf)
 
 /*
  *1 default: page outpue
- *2 single reg read: echo "r reg" > rr£¬cat rr
+ *2 single reg read: echo "r reg" > rr\A3\ACcat rr
  *3 single reg write: echo "w reg val"
  */
 static int hissc_rr_read(struct file *file, char __user *user_buf,
@@ -4669,7 +4669,7 @@ static int hissc_rr_read(struct file *file, char __user *user_buf,
 
 /*
  *1 default: page outpue
- *2 single reg read: echo "r reg" > rr£¬cat rr
+ *2 single reg read: echo "r reg" > rr\A3\ACcat rr
  *3 single reg write: echo "w reg val"
  */
 static int hissc_rr_write(struct file *file, const char __user *user_buf, size_t count, loff_t *ppos)
@@ -5076,7 +5076,7 @@ struct snd_soc_dai_driver hissc_dai[] = {
 static int set_headset_keys_config(struct hissc_priv *priv)
 {
 	/* config the headset */
-	priv->headset_voltage->hs_3_pole_max_voltage = 8;
+	priv->headset_voltage->hs_3_pole_max_voltage = 15;
 	priv->headset_voltage->hs_4_pole_min_voltage = 900;
 	priv->headset_voltage->hs_4_pole_max_voltage = 2565;
 	logi("headset_voltage {3pole=%d, 4pole=(%d-%d)}\n",
@@ -5258,7 +5258,7 @@ static int hissc_headset_init(struct snd_soc_codec *codec)
 	priv->hs_jack->report = 0;
 	priv->pressed_btn_type = 0;
 
-	/*VREF PD ú»MICBIAS PD  */
+	/*VREF PD \FA\BBMICBIAS PD  */
 	hissc_set_reg_bits(HISSC_SMT_CODEC_ANA_RW02_ADDR, 0x1 << HISSC_SMT_HSMICB_PD_BIT_START);
 	hissc_set_reg_bits(HISSC_SMT_CODEC_ANA_RW24_ADDR, 0x1 << HISSC_SMT_MBHD_VREF_PD_BIT_START);
 
