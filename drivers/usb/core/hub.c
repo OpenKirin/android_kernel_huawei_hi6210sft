@@ -112,9 +112,8 @@ EXPORT_SYMBOL_GPL(ehci_cf_port_reset_rwsem);
 #define HUB_DEBOUNCE_TIMEOUT	2000
 #define HUB_DEBOUNCE_STEP	  25
 #define HUB_DEBOUNCE_STABLE	 100
-/* BEGIN PN: DTS2016080504501,Modified by sunyoujin wx314061, 2016/8/05*/
+
 static void hub_release(struct kref *kref);
-/* BEGIN PN: DTS2016080504501,Modified by sunyoujin wx314061, 2016/8/05*/
 static int usb_reset_and_verify_device(struct usb_device *udev);
 
 static inline char *portspeed(struct usb_hub *hub, int portstatus)
@@ -1026,22 +1025,21 @@ static void hub_activate(struct usb_hub *hub, enum hub_activation_type type)
 	unsigned delay;
 
 	/* Continue a partial initialization */
-	/* BEGIN PN: DTS2016080504501,Modified by sunyoujin wx314061, 2016/8/05*/
-        if (type == HUB_INIT2 || type == HUB_INIT3) {
-                device_lock(hub->intfdev);
+	if (type == HUB_INIT2 || type == HUB_INIT3) {
+		device_lock(hub->intfdev);
 
-                /* Was the hub disconnected while we were waiting? */
-                if (hub->disconnected) {
-                        device_unlock(hub->intfdev);
-                        kref_put(&hub->kref, hub_release);
-                        return;
-                }
-                if (type == HUB_INIT2)
-                        goto init2;
-                goto init3;
-        }
-        kref_get(&hub->kref);
-	/* END PN: DTS2016080504501,Modified by sunyoujin wx314061, 2016/8/05*/
+		/* Was the hub disconnected while we were waiting? */
+		if (hub->disconnected) {
+			device_unlock(hub->intfdev);
+			kref_put(&hub->kref, hub_release);
+			return;
+		}
+		if (type == HUB_INIT2)
+			goto init2;
+		goto init3;
+	}
+	kref_get(&hub->kref);
+
 	/* The superspeed hub except for root hub has to use Hub Depth
 	 * value as an offset into the route string to locate the bits
 	 * it uses to determine the downstream port number. So hub driver
@@ -1237,9 +1235,7 @@ static void hub_activate(struct usb_hub *hub, enum hub_activation_type type)
 			PREPARE_DELAYED_WORK(&hub->init_work, hub_init_func3);
 			schedule_delayed_work(&hub->init_work,
 					msecs_to_jiffies(delay));
-			/* BEGIN PN: DTS2016080504501,Modified by sunyoujin wx314061, 2016/8/05*/	
 			device_unlock(hub->intfdev);
-			/* END PN: DTS2016080504501,Modified by sunyoujin wx314061, 2016/8/05*/
 			return;		/* Continues at init3: below */
 		} else {
 			msleep(delay);
@@ -1260,12 +1256,11 @@ static void hub_activate(struct usb_hub *hub, enum hub_activation_type type)
 	/* Allow autosuspend if it was suppressed */
 	if (type <= HUB_INIT3)
 		usb_autopm_put_interface_async(to_usb_interface(hub->intfdev));
-		/* BEGIN PN: DTS2016080504501,Modified by sunyoujin wx314061, 2016/8/05*/	
-        if (type == HUB_INIT2 || type == HUB_INIT3)
-                device_unlock(hub->intfdev);
 
-        kref_put(&hub->kref, hub_release);
-		/* BEGIN PN: DTS2016080504501,Modified by sunyoujin wx314061, 2016/8/05*/
+	if (type == HUB_INIT2 || type == HUB_INIT3)
+		device_unlock(hub->intfdev);
+
+	kref_put(&hub->kref, hub_release);
 }
 
 /* Implement the continuations for the delays above */
