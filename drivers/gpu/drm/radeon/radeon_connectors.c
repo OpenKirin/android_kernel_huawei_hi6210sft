@@ -69,10 +69,15 @@ void radeon_connector_hotplug(struct drm_connector *connector)
 		int saved_dpms = connector->dpms;
 
 		/* Only turn off the display it it's physically disconnected */
-		if (!radeon_hpd_sense(rdev, radeon_connector->hpd.hpd))
+		if (!radeon_hpd_sense(rdev, radeon_connector->hpd.hpd)) {
 			drm_helper_connector_dpms(connector, DRM_MODE_DPMS_OFF);
-		else if (radeon_dp_needs_link_train(radeon_connector))
+		} else if (radeon_dp_needs_link_train(radeon_connector)) {
+				/* Don't try to start link training before we
+				 * have the dpcd */
+				if (!radeon_dp_getdpcd(radeon_connector))
+					return;
 			drm_helper_connector_dpms(connector, DRM_MODE_DPMS_ON);
+		}
 		connector->dpms = saved_dpms;
 	}
 }
