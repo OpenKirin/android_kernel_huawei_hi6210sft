@@ -1105,13 +1105,12 @@ static int proc_getdriver(struct dev_state *ps, void __user *arg)
 
 static int proc_connectinfo(struct dev_state *ps, void __user *arg)
 {
-	/* BEGIN PN: DTS2016080504501,Modified by sunyoujin wx314061, 2016/8/05*/
 	struct usbdevfs_connectinfo ci;
-	
+
 	memset(&ci, 0, sizeof(ci));
 	ci.devnum = ps->dev->devnum;
 	ci.slow = ps->dev->speed == USB_SPEED_LOW;
-	/* END PN: DTS2016080504501,Modified by sunyoujin wx314061, 2016/8/05*/
+
 	if (copy_to_user(arg, &ci, sizeof(ci)))
 		return -EFAULT;
 	return 0;
