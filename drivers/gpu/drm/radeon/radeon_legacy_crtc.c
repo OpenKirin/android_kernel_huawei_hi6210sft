@@ -325,6 +325,8 @@ void radeon_crtc_dpms(struct drm_crtc *crtc, int mode)
 			WREG32_P(RADEON_CRTC_EXT_CNTL, 0, ~mask);
 		}
 		drm_vblank_post_modeset(dev, radeon_crtc->crtc_id);
+		/* Make sure vblank interrupt is still enabled if needed */
+		radeon_irq_set(rdev);
 		radeon_crtc_load_lut(crtc);
 		break;
 	case DRM_MODE_DPMS_STANDBY:

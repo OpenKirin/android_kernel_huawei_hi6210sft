@@ -39,9 +39,8 @@ static inline unsigned int sk_filter_len(const struct sk_filter *fp)
 int sk_filter_trim_cap(struct sock *sk, struct sk_buff *skb, unsigned int cap);
 static inline int sk_filter(struct sock *sk, struct sk_buff *skb)
 {
-       return sk_filter_trim_cap(sk, skb, 1);
+	return sk_filter_trim_cap(sk, skb, 1);
 }
-
 extern unsigned int sk_run_filter(const struct sk_buff *skb,
 				  const struct sock_filter *filter);
 extern int sk_unattached_filter_create(struct sk_filter **pfp,

@@ -7022,6 +7022,7 @@ SYSCALL_DEFINE5(perf_event_open,
 			 */
 			if (group_leader->ctx->task != ctx->task)
 				goto err_context;
+
 			/*
 			 * Make sure we're both events for the same CPU;
 			 * grouping events for different CPUs is broken; since
