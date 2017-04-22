@@ -84,6 +84,7 @@ static struct iscsi_login *iscsi_login_init_conn(struct iscsi_conn *conn)
 	init_completion(&conn->conn_logout_comp);
 	init_completion(&conn->rx_half_close_comp);
 	init_completion(&conn->tx_half_close_comp);
+	init_completion(&conn->rx_login_comp);
 	spin_lock_init(&conn->cmd_lock);
 	spin_lock_init(&conn->conn_usage_lock);
 	spin_lock_init(&conn->immed_queue_lock);
@@ -683,7 +684,7 @@ static void iscsi_post_login_start_timers(struct iscsi_conn *conn)
 		iscsit_start_nopin_timer(conn);
 }
 
-static int iscsi_post_login_handler(
+static void iscsi_post_login_handler(
 	struct iscsi_np *np,
 	struct iscsi_conn *conn,
 	u8 zero_tsih)
@@ -745,15 +746,20 @@ static int iscsi_post_login_handler(
 		iscsit_thread_get_cpumask(conn);
 		conn->conn_rx_reset_cpumask = 1;
 		conn->conn_tx_reset_cpumask = 1;
-
+		/*
+		 * Wakeup the sleeping iscsi_target_rx_thread() now that
+		 * iscsi_conn is in TARG_CONN_STATE_LOGGED_IN state.
+		 */
+		complete(&conn->rx_login_comp);
 		iscsit_dec_conn_usage_count(conn);
+
 		if (stop_timer) {
 			spin_lock_bh(&se_tpg->session_lock);
 			iscsit_stop_time2retain_timer(sess);
 			spin_unlock_bh(&se_tpg->session_lock);
 		}
 		iscsit_dec_session_usage_count(sess);
-		return 0;
+		return;
 	}
 
 	iscsi_set_session_parameters(sess->sess_ops, conn->param_list, 1);
@@ -803,10 +809,12 @@ static int iscsi_post_login_handler(
 	iscsit_thread_get_cpumask(conn);
 	conn->conn_rx_reset_cpumask = 1;
 	conn->conn_tx_reset_cpumask = 1;
-
+	/*
+	 * Wakeup the sleeping iscsi_target_rx_thread() now that
+	 * iscsi_conn is in TARG_CONN_STATE_LOGGED_IN state.
+	 */
+	complete(&conn->rx_login_comp);
 	iscsit_dec_conn_usage_count(conn);
-
-	return 0;
 }
 
 static void iscsi_handle_login_thread_timeout(unsigned long data)
@@ -1282,20 +1290,9 @@ static int __iscsi_target_login_thread(struct iscsi_np *np)
 	if (iscsi_target_start_negotiation(login, conn) < 0)
 		goto new_sess_out;
 
-	if (!conn->sess) {
-		pr_err("struct iscsi_conn session pointer is NULL!\n");
-		goto new_sess_out;
-	}
-
 	iscsi_stop_login_thread_timer(np);
 
-	if (signal_pending(current))
-		goto new_sess_out;
-
-	ret = iscsi_post_login_handler(np, conn, zero_tsih);
-
-	if (ret < 0)
-		goto new_sess_out;
+	iscsi_post_login_handler(np, conn, zero_tsih);
 
 	iscsit_deaccess_np(np, tpg);
 	tpg = NULL;
