@@ -495,8 +495,10 @@ static void skip_emulated_instruction(struct kvm_vcpu *vcpu)
 {
 	struct vcpu_svm *svm = to_svm(vcpu);
 
-	if (svm->vmcb->control.next_rip != 0)
+	if (svm->vmcb->control.next_rip != 0) {
+		WARN_ON_ONCE(!static_cpu_has(X86_FEATURE_NRIPS));
 		svm->next_rip = svm->vmcb->control.next_rip;
+	}
 
 	if (!svm->next_rip) {
 		if (emulate_instruction(vcpu, EMULTYPE_SKIP) !=
