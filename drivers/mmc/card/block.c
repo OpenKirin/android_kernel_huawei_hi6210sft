@@ -159,8 +159,7 @@ static struct modem_mount_info modem_mount_list[MODEM_INVALID_MOUNT] = {
 #define MMC_BLK_TIMEOUT_MS  (20 * 60 * 1000)        /* 20 minute timeout */
 #define SD_BLK_TIMEOUT_MS  (1 * 60 * 1000)     /* for SD 1 minute timeout */
 
-#define mmc_req_rel_wr(req)	(((req->cmd_flags & REQ_FUA) || \
-				  (req->cmd_flags & REQ_META)) && \
+#define mmc_req_rel_wr(req)	((req->cmd_flags & REQ_FUA) && \
 				  (rq_data_dir(req) == WRITE))
 #define PACKED_CMD_VER	0x01
 #define PACKED_CMD_WR	0x02
@@ -2203,13 +2202,9 @@ static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
 
 	/*
 	 * Reliable writes are used to implement Forced Unit Access and
-	 * REQ_META accesses, and are supported only on MMCs.
-	 *
-	 * XXX: this really needs a good explanation of why REQ_META
-	 * is treated special.
+	 * are supported only on MMCs.
 	 */
-	bool do_rel_wr = ((req->cmd_flags & REQ_FUA) ||
-			  (req->cmd_flags & REQ_META)) &&
+	bool do_rel_wr = (req->cmd_flags & REQ_FUA) &&
 		(rq_data_dir(req) == WRITE) &&
 		(md->flags & MMC_BLK_REL_WR);
 
