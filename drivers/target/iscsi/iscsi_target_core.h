@@ -586,6 +586,7 @@ struct iscsi_conn {
 	struct iscsi_session	*sess;
 	/* Pointer to thread_set in use for this conn's threads */
 	struct iscsi_thread_set	*thread_set;
+	struct completion	rx_login_comp;
 	/* list_head for session connection list */
 	struct list_head	conn_list;
 } ____cacheline_aligned;
