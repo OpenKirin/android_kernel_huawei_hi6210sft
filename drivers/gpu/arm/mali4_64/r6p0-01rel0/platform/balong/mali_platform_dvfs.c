@@ -574,7 +574,7 @@ void pwrctrl_dfs_gpu_disable(void)
     {
         /* back the current profile for powerup */
         g_mali_dfs_var.dfs_BakPrf = g_mali_dfs_var.dfs_CurrPrf;
-        mali_remark_clockrate(0);    //set gpu clock rate to 0MHZ
+        //mali_remark_clockrate(0);    //set gpu clock rate to 0MHZ
     }
 }
 
