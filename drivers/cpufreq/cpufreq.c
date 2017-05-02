@@ -2040,7 +2040,8 @@ static int __cpuinit cpufreq_cpu_callback(struct notifier_block *nfb,
 		case CPU_ONLINE:
 		case CPU_ONLINE_FROZEN:
 			cpufreq_add_dev(dev, NULL);
-			kobject_uevent(&dev->kobj, KOBJ_ADD);
+			//kobject_uevent(&dev->kobj, KOBJ_ADD);
+			cpufreq_update_policy(cpu);
 			break;
 		case CPU_DOWN_PREPARE:
 		case CPU_DOWN_PREPARE_FROZEN:
