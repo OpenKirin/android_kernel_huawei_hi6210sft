@@ -134,7 +134,6 @@ static ssize_t show_all_time_in_state(struct kobject *kobj,
 	ssize_t len = 0;
 	unsigned int i, cpu, freq, index;
 	struct all_cpufreq_stats *all_stat;
-	struct cpufreq_policy *policy;
 
 	len += scnprintf(buf + len, PAGE_SIZE - len, "freq\t\t");
 	for_each_possible_cpu(cpu) {
@@ -149,10 +148,7 @@ static ssize_t show_all_time_in_state(struct kobject *kobj,
 		freq = all_freq_table->freq_table[i];
 		len += scnprintf(buf + len, PAGE_SIZE - len, "\n%u\t\t", freq);
 		for_each_possible_cpu(cpu) {
-			policy = cpufreq_cpu_get(cpu);
-			if (policy == NULL)
-				continue;
-			all_stat = per_cpu(all_cpufreq_stats, policy->cpu);
+			all_stat = per_cpu(all_cpufreq_stats, cpu);
 			index = get_index_all_cpufreq_stat(all_stat, freq);
 			if (index != -1) {
 				len += scnprintf(buf + len, PAGE_SIZE - len,
@@ -162,7 +158,6 @@ static ssize_t show_all_time_in_state(struct kobject *kobj,
 				len += scnprintf(buf + len, PAGE_SIZE - len,
 						"N/A\t\t");
 			}
-			cpufreq_cpu_put(policy);
 		}
 	}
 
@@ -655,8 +650,7 @@ static int cpufreq_stats_setup(void)
 	}
 
 	create_all_freq_table();
-	ret = sysfs_create_file(cpufreq_global_kobject,
-			&_attr_all_time_in_state.attr);
+	ret = cpufreq_sysfs_create_file(&_attr_all_time_in_state.attr);
 	if (ret)
 		pr_warn("Error creating sysfs file for cpufreq stats\n");
 
