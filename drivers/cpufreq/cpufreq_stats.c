@@ -755,7 +755,7 @@ static struct notifier_block notifier_trans_block = {
 	.notifier_call = cpufreq_stat_notifier_trans
 };
 
-static int cpufreq_stats_setup(void)
+static int __init cpufreq_stats_init(void)
 {
 	int ret;
 	unsigned int cpu;
@@ -796,7 +796,7 @@ static int cpufreq_stats_setup(void)
 	return 0;
 }
 
-static void cpufreq_stats_cleanup(void)
+static void __exit cpufreq_stats_exit(void)
 {
 	unsigned int cpu;
 
@@ -811,21 +811,6 @@ static void cpufreq_stats_cleanup(void)
 	}
 	cpufreq_allstats_free();
     cpufreq_powerstats_free();
-}
-
-static int __init cpufreq_stats_init(void)
-{
-	int ret;
-	spin_lock_init(&cpufreq_stats_lock);
-
-	ret = cpufreq_stats_setup();
-
-	return ret;
-}
-
-static void __exit cpufreq_stats_exit(void)
-{
-	cpufreq_stats_cleanup();
 }
 
 MODULE_AUTHOR("Zou Nan hai <nanhai.zou@intel.com>");
