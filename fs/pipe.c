@@ -123,7 +123,7 @@ void pipe_wait(struct pipe_inode_info *pipe)
 }
 
 static int
-pipe_iov_copy_from_user(void *addr, int *offset,struct iovec *iov, size_t *remaining,
+pipe_iov_copy_from_user(void *addr, int *offset, struct iovec *iov, size_t *remaining,
 			int atomic)
 {
 	unsigned long copy;
@@ -134,10 +134,12 @@ pipe_iov_copy_from_user(void *addr, int *offset,struct iovec *iov, size_t *remai
 		copy = min_t(unsigned long, *remaining, iov->iov_len);
 
 		if (atomic) {
-			if (__copy_from_user_inatomic(addr + *offset, iov->iov_base, copy))
+			if (__copy_from_user_inatomic(addr + *offset,
+						      iov->iov_base, copy))
 				return -EFAULT;
 		} else {
-			if (copy_from_user(addr + *offset, iov->iov_base, copy))
+			if (copy_from_user(addr + *offset,
+					   iov->iov_base, copy))
 				return -EFAULT;
 		}
 		*offset += copy;
@@ -149,8 +151,8 @@ pipe_iov_copy_from_user(void *addr, int *offset,struct iovec *iov, size_t *remai
 }
 
 static int
-pipe_iov_copy_to_user(struct iovec *iov, void *addr,int *offset, size_t *remaining,
-		      int atomic)
+pipe_iov_copy_to_user(struct iovec *iov, void *addr, int *offset,
+		      size_t *remaining, int atomic)
 {
 	unsigned long copy;
 
@@ -160,10 +162,12 @@ pipe_iov_copy_to_user(struct iovec *iov, void *addr,int *offset, size_t *remaini
 		copy = min_t(unsigned long, *remaining, iov->iov_len);
 
 		if (atomic) {
-			if (__copy_to_user_inatomic(iov->iov_base, addr + *offset, copy))
+			if (__copy_to_user_inatomic(iov->iov_base,
+						    addr + *offset, copy))
 				return -EFAULT;
 		} else {
-			if (copy_to_user(iov->iov_base, addr + *offset, copy))
+			if (copy_to_user(iov->iov_base,
+					 addr + *offset, copy))
 				return -EFAULT;
 		}
 		*offset += copy;
@@ -420,7 +424,8 @@ pipe_read(struct kiocb *iocb, const struct iovec *_iov,
 			offset = buf->offset;
 redo:
 			addr = ops->map(pipe, buf, atomic);
-			error = pipe_iov_copy_to_user(iov, addr, &offset, &remaining, atomic);
+			error = pipe_iov_copy_to_user(iov, addr, &offset,
+						      &remaining, atomic);
 			ops->unmap(pipe, buf, addr);
 			if (unlikely(error)) {
 				/*
@@ -614,8 +619,8 @@ redo2:
 			else
 				src = kmap(page);
 
-			error = pipe_iov_copy_from_user(src,&offset, iov, &remaining,
-							atomic);
+			error = pipe_iov_copy_from_user(src, &offset, iov,
+							&remaining, atomic);
 			if (atomic)
 				kunmap_atomic(src);
 			else
