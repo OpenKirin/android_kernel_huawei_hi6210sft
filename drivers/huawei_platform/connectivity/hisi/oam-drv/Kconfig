@@ -4,7 +4,7 @@
 
 config OAM_DRV
 	tristate "oam drv for wifi driver"
-	default m
+	default n
 	help
 	  This driver used by the wifi driver send dbg log to sdt;
 	  used to link wifi driver and oam_app;

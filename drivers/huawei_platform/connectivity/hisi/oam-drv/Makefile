@@ -5,6 +5,6 @@
 #EXTRA_CFLAGS += -DMODULE -fno-pic
 #MODFLAGS = -DMODULE -fno-pic
 
-obj-$(CONFIG_HI1101_WIFI)	+= oamdrv.o
-oamdrv-objs			:= oam_drv.o
+obj-$(CONFIG_OAM_DRV)	+= oamdrv.o
+oamdrv-objs		:= oam_drv.o
 
