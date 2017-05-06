@@ -123,7 +123,7 @@ typedef void (dio_iodone_t)(struct kiocb *iocb, loff_t offset,
 #define FMODE_PATH		((__force fmode_t)0x4000)
 
 /* File hasn't page cache and can't be mmaped, for stackable filesystem */
-#define FMODE_NOMAPPABLE        ((__force fmode_t)0x8000)
+#define FMODE_NONMAPPABLE        ((__force fmode_t)0x8000)
 
 /* File page don't need to be cached, for stackable filesystem's lower file */
 #define FMODE_NOCACHEABLE		((__force fmode_t)0x10000)
