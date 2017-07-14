@@ -1,0 +1,3 @@
+config ANTENNA_BOARD_ADC_DETECT
+     bool "antenna_board_adc_detect support"
+	 default n

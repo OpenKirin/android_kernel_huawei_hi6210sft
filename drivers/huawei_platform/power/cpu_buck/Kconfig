@@ -1,0 +1,3 @@
+config HUAWEI_CPU_BUCK
+	bool "huawei cpu_buck"
+	default n

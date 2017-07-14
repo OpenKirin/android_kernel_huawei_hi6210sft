@@ -1,0 +1,3 @@
+config HUAWEI_LP8754
+	bool "huawei lp8754"
+	default n

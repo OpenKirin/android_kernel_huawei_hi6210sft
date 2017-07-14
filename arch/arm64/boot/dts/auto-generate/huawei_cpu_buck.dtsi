@@ -1,0 +1,10 @@
+/ {
+	huawei_cpu_buck: huawei_cpu_buck {
+		compatible = "huawei,cpu_buck";
+		status = "disabled";
+	};
+	huawei_lp8754: huawei_lp8754 {
+		compatible = "huawei,lp8754";
+		status = "disabled";
+	};
+};

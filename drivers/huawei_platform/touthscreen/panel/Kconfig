@@ -1,0 +1,45 @@
+#
+# huawei touchscreen driver configuration
+#
+
+config SYNAPTICS_TS
+	bool "synaptics touchscreen"
+	default n
+	help
+	  If you say yes here you get support for synaptics touchscreen.
+config SYNAPTICS_LCD_TYPE
+	bool "synaptics touchscreen"
+	default n
+	help
+	  If you say yes here you get support for synaptics touchscreen.
+config CYPRESS_TS
+	bool "cypress touchscreen"
+	default n
+	help
+	  If you say yes here you get support for cypress touchscreen.
+config WACOM_TS
+	bool "wacom touchscreen"
+	default n
+	help
+	  If you say yes here you get support for wacom touchscreen.
+config HIDEEP_TS
+	bool "hideep crimson touchscreen"
+	default n
+	help
+	  If you say yes here you get support for hideep touchscreen.
+config HI3630_TS_FW_BUILD
+	bool "K3V3 FW"
+	default y
+	help
+	  If you say yes here you build FW in HI3630.
+config HI3635_TS_FW_BUILD
+	bool "K3V3PLUS FW"
+	default y
+	help
+	  If you say yes here you build FW in HI3635.
+config HI6220_TS_FW_BUILD
+	bool "HI6220 FW"
+	default y
+	help
+	  If you say yes here you build FW in HI6210.
+

@@ -1,0 +1,78 @@
+/*
+ *  Copyright (C) 2013 Huawei co Ltd.
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 2 as
+ *  publishhed by the Free Software Foundation.
+ */
+
+/ {
+	audio_hw_config {
+		product_name = "none";
+		cust_name = "none";
+		spk_pa_name = "none";
+		soc_name = "hi363x";
+		codec_name = "hi6402";
+		codec_dsp_algo = "none";
+		modem_sio_master = "false";
+		ear_pa_name = "none";
+		status = "disabled";
+	};
+
+	speakerID: speakerID@0 {
+		compatible = "huawei,speaker_id";
+		channel = <5>;
+		status = "disabled";
+	};
+
+	anc_hs: anc_hs@0{
+		compatible = "huawei,anc_hs";
+		gpios = <&gpio4 2 0>, <&gpio23 4 0>;
+		adc_channel_h = <15>;
+		adc_channel_l = <14>;
+		anc_hs_limit_min = <5>;
+		anc_hs_limit_max = <200>;
+		anc_hs_btn_hook_min_voltage = <150>;
+		anc_hs_btn_hook_max_voltage = <188>;
+		anc_hs_btn_volume_up_min_voltage = <192>;
+		anc_hs_btn_volume_up_max_voltage = <235>;
+		anc_hs_btn_volume_down_min_voltage = <240>;
+		anc_hs_btn_volume_down_max_voltage = <290>;
+		//0 means soc gpios, 1 means codec gpios
+		gpio_type = <0>;
+		status = "disabled";
+	};
+
+	dts_eagle: dts_eagle@0 {
+		compatible = "huawei,dts_eagle";
+		u32_reg = <0x11>;
+		product_id = "eagle";
+		vendor_id = "dts";
+		hw,public = "product_id", "vendor_id";
+		status = "disabled";
+	};
+	
+	ad45257_hs_pa@0{
+		compatible = "huawei,ad45257_hs_pa";
+		gpios = <&gpio0 2 0>;
+		status = "disabled";
+	};
+	
+	amba {
+		i2c1: i2c@FDF0A000 {
+			tpa2028_spkpa_l:spkpa@58 {
+				compatible = "huawei,tpa2028_l";
+				reg = <0x58>;
+				gpios = <&gpio4 4 0>;
+				status = "disabled";
+			};
+		};
+		i2c4: i2c@FDF0D000 {
+			tpa2028_spkpa_r:spkpa@58 {
+				compatible = "huawei,tpa2028_r";
+				reg = <0x58>;
+				status = "disabled";
+			};
+		};
+	};
+};

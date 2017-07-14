@@ -1,0 +1,18 @@
+#
+# Huawei Set hmp thresholds policy
+#
+
+comment "set hmp thresholds policy"
+config HISI_HMPTH_SET
+	bool "Huawei Set hmp thresholds policy"
+	depends on SCHED_HMP
+	default n
+	help
+	  This module provides interfaces for user and kernel to set hmp threshold policy.
+
+config HISI_HMPTH_OPEN
+        bool "Enable touch boost hmp thresholds policy"
+        depends on HISI_HMPTH_SET
+        default n
+        help
+          Enable touch boost hmp threshold policy.

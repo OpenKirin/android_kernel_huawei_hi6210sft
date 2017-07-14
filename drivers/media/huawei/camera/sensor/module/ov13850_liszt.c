@@ -1,0 +1,455 @@
+/*
+ *  Hisilicon K3 SOC camera driver source file
+ *
+ *  Copyright (C) Huawei Technology Co., Ltd.
+ *
+ * Author:	  h00145353
+ * Email:	  alan.hefeng@huawei.com
+ * Date:	  2013-12-27
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+
+#include <linux/module.h>
+#include <linux/printk.h>
+#include <linux/of.h>
+#include <linux/of_device.h>
+#include <linux/platform_device.h>
+
+#include "hwsensor.h"
+#include "sensor_commom.h"
+#include "hw_csi.h"
+
+#define I2S(i) container_of(i, sensor_t, intf)
+
+extern struct hw_csi_pad hw_csi_pad;
+static hwsensor_vtbl_t s_ov13850_liszt_vtbl;
+
+int ov13850_liszt_config(hwsensor_intf_t* si, void  *argp);
+
+struct sensor_power_setting hw_ov13850_liszt_power_setting[] = {
+    //MINIISP DVDD 1.1V
+	    {
+    	.seq_type = SENSOR_CS,
+    	.config_val = SENSOR_GPIO_HIGH,
+    	.sensor_index = SENSOR_INDEX_INVALID,
+    	.delay = 1,
+    },
+
+    //MINIISP CORE 1.1V
+    {
+        .seq_type = SENSOR_SUSPEND,
+        .config_val = SENSOR_GPIO_LOW,
+        .sensor_index = SENSOR_INDEX_INVALID,
+        .delay = 1,
+    },
+    //MINIISP DVDD 1.1V
+    {
+        .seq_type = SENSOR_RST2,
+        .config_val = SENSOR_GPIO_LOW,
+        .sensor_index = SENSOR_INDEX_INVALID,
+        .delay = 1,
+    },
+
+
+
+	{
+		.seq_type = SENSOR_IOVDD,
+		.data = (void*)"common-iovdd",
+		.config_val = LDO_VOLTAGE_1P8V,
+		.sensor_index = SENSOR_INDEX_INVALID,
+		.delay = 1,
+	},
+
+
+	{
+		.seq_type = SENSOR_VCM_AVDD,
+		.data = (void*)"cameravcm-vcc",
+		.config_val = LDO_VOLTAGE_2P8V,
+		.sensor_index = SENSOR_INDEX_INVALID,
+		.delay = 1,
+	},
+
+	{
+		.seq_type = SENSOR_AVDD,
+		.data = (void*)"main-sensor-avdd",
+		.config_val = LDO_VOLTAGE_2P8V,
+		.sensor_index = SENSOR_INDEX_INVALID,
+		.delay = 1,
+	},
+
+	{
+		.seq_type = SENSOR_DVDD,
+		.config_val = LDO_VOLTAGE_1P2V,
+		.sensor_index = SENSOR_INDEX_INVALID,
+		.delay = 1,
+	},
+
+        {
+		.seq_type = SENSOR_MINIISP_VPP,
+		.config_val = LDO_VOLTAGE_1P8V,
+		.sensor_index = SENSOR_INDEX_INVALID,
+		.delay = 1,
+	},
+
+	{
+		.seq_type = SENSOR_MCLK,
+		.sensor_index = SENSOR_INDEX_INVALID,
+		.delay = 1,
+	},
+
+    //MCAM1 RESET
+    {
+        .seq_type = SENSOR_RST,
+        .config_val = SENSOR_GPIO_LOW,
+        .sensor_index = SENSOR_INDEX_INVALID,
+        .delay = 1,
+    },
+
+	{
+		.seq_type = SENSOR_VCM_PWDN,
+		.config_val = SENSOR_GPIO_LOW,
+		.sensor_index = SENSOR_INDEX_INVALID,
+		.delay = 1,
+	},
+};
+
+static sensor_t s_ov13850_liszt =
+{
+    .intf = { .vtbl = &s_ov13850_liszt_vtbl, },
+    .power_setting_array = {
+            .size = ARRAY_SIZE(hw_ov13850_liszt_power_setting),
+            .power_setting = hw_ov13850_liszt_power_setting,
+     },
+};
+
+static const struct of_device_id
+s_ov13850_liszt_dt_match[] =
+{
+	{
+        .compatible = "huawei,ov13850_liszt",
+        .data = &s_ov13850_liszt.intf,
+    },
+	{
+    },
+};
+
+MODULE_DEVICE_TABLE(of, s_ov13850_liszt_dt_match);
+
+static struct platform_driver
+s_ov13850_liszt_driver =
+{
+	.driver =
+    {
+		.name = "huawei,ov13850_liszt",
+		.owner = THIS_MODULE,
+		.of_match_table = s_ov13850_liszt_dt_match,
+	},
+};
+
+static struct platform_device* ov13850_liszt_pdev = NULL;
+
+char const*
+ov13850_liszt_get_name(
+        hwsensor_intf_t* si)
+{
+    sensor_t* sensor = I2S(si);
+    return sensor->board_info->name;
+}
+
+
+int
+ov13850_liszt_power_up(
+        hwsensor_intf_t* si)
+{
+	int ret = 0, rc = 0;
+	sensor_t* sensor = NULL;
+	hwsensor_board_info_t *sensor_info = NULL;
+
+	sensor = I2S(si);
+	sensor_info = sensor->board_info;
+
+	if(!sensor_info->ldo->consumer)
+	{
+		rc = devm_regulator_bulk_get(&(ov13850_liszt_pdev->dev), sensor_info->ldo_num, sensor_info->ldo);
+		if (rc < 0)
+		{
+			cam_err("%s failed %d\n", __func__, __LINE__);
+		}
+	}
+
+	ret = hw_sensor_power_up(sensor);
+	return ret;
+}
+
+int
+ov13850_liszt_power_down(
+        hwsensor_intf_t* si)
+{
+	int ret = 0;
+	int i, num_consumers;
+	sensor_t* sensor = NULL;
+	struct regulator_bulk_data *consumers;
+
+	sensor = I2S(si);
+	ret = hw_sensor_power_down(sensor);
+
+	consumers = sensor->board_info->ldo;
+	num_consumers = sensor->board_info->ldo_num;
+	for (i = 0; i < num_consumers && consumers[i].consumer; i++)
+	{
+		devm_regulator_put(consumers[i].consumer);
+		consumers[i].consumer = NULL;
+	}
+
+
+	return ret;
+}
+
+int ov13850_liszt_csi_enable(hwsensor_intf_t* si)
+{
+	int ret = 0;
+	sensor_t* sensor = NULL;
+	sensor = I2S(si);
+
+    ret = hw_csi_pad.hw_csi_enable(0, sensor->board_info->csi_lane, sensor->board_info->csi_mipi_clk);//by hefei
+    if(ret)
+    {
+        cam_err("failed to csi enable index 0 ");
+        return ret;
+    }
+
+    return 0;
+}
+
+int ov13850_liszt_csi_disable(hwsensor_intf_t* si)
+{
+    int ret = 0;
+    sensor_t* sensor = NULL;
+
+    sensor = I2S(si);
+
+    ret = hw_csi_pad.hw_csi_disable(0);//by hefei
+    if(ret)
+    {
+        cam_err("failed to csi disable index 0 ");
+        return ret;
+    }
+
+    return 0;
+}
+static int ov13850_liszt_match_id(hwsensor_intf_t* si, void * data)
+{
+    sensor_t* sensor = I2S(si);
+    struct sensor_cfg_data *cdata = (struct sensor_cfg_data *)data;
+    uint16_t sensor_id = 0;
+    uint8_t modue_id = 0;
+    char *sensor_name[3]={"ov13850_liteon","ov13850_ofilm","ov13850"};
+    uint8_t retry = 0;
+
+    cam_info("%s TODO.", __func__);
+    for(retry = 0;retry < 2; retry++){
+        misp_get_module_info(sensor->board_info->sensor_index,&sensor_id,&modue_id);
+        if(sensor_id==0){
+            cam_info("%s try to read camera id again",__func__);
+            continue;
+        }else{
+            break;
+        }
+    }
+
+    if(sensor_id == 0xd850) {
+        cdata->data = sensor->board_info->sensor_index;
+        if(modue_id == 0x03) {
+            strncpy(cdata->cfg.name, sensor_name[0], DEVICE_NAME_SIZE);
+        } else if (modue_id == 0x06) {
+            strncpy(cdata->cfg.name, sensor_name[1], DEVICE_NAME_SIZE);
+        } else {
+            strncpy(cdata->cfg.name, sensor_name[2], DEVICE_NAME_SIZE);
+        }
+        hwsensor_writefile(sensor->board_info->sensor_index, cdata->cfg.name);	
+    } else {
+        cdata->data = SENSOR_INDEX_INVALID;
+    }
+
+    cam_info("%s TODO.  cdata->data=%d", __func__, cdata->data);
+
+    return 0;
+}
+
+static ssize_t ov13850_liszt_powerctrl_show(struct device *dev,
+	struct device_attribute *attr,char *buf)
+{
+        int rc=0;
+        cam_info("enter %s", __func__);
+
+        return rc;
+}
+static ssize_t ov13850_liszt_powerctrl_store(struct device *dev,
+	struct device_attribute *attr, const char *buf, size_t count)
+{
+	int state = simple_strtol(buf, NULL, 10);
+	cam_info("enter %s, state %d", __func__, state);
+
+	if (state == POWER_ON)
+		ov13850_liszt_power_up(&s_ov13850_liszt.intf);
+	else
+		ov13850_liszt_power_down(&s_ov13850_liszt.intf);
+
+	return count;
+}
+
+
+static struct device_attribute ov13850_liszt_powerctrl =
+    __ATTR(power_ctrl, 0664, ov13850_liszt_powerctrl_show, ov13850_liszt_powerctrl_store);
+
+int ov13850_liszt_register_attribute(hwsensor_intf_t* intf, struct device* dev)
+{
+	int ret = 0;
+	cam_info("enter %s", __func__);
+
+	ret = device_create_file(dev, &ov13850_liszt_powerctrl);
+	if (ret < 0) {
+		cam_err("%s failed to creat power ctrl attribute.", __func__);
+		goto err_create_power_ctrl;
+	}
+	return 0;
+err_create_power_ctrl:
+	device_remove_file(dev, &ov13850_liszt_powerctrl);
+	return ret;
+}
+
+static hwsensor_vtbl_t
+s_ov13850_liszt_vtbl =
+{
+	.get_name = ov13850_liszt_get_name,
+	.config = ov13850_liszt_config,
+	.power_up = ov13850_liszt_power_up,
+	.power_down = ov13850_liszt_power_down,
+
+
+	.match_id = ov13850_liszt_match_id,
+
+	.csi_enable = ov13850_liszt_csi_enable,
+	.csi_disable = ov13850_liszt_csi_disable,
+	.sensor_register_attribute = ov13850_liszt_register_attribute,
+};
+
+int
+ov13850_liszt_config(
+        hwsensor_intf_t* si,
+        void  *argp)
+{
+	struct sensor_cfg_data *data;
+
+	int ret =0;
+	static bool ov13850_liszt_power_on = false;
+	static bool csi_enable = false;
+	data = (struct sensor_cfg_data *)argp;
+	cam_debug("ov13850_liszt cfgtype = %d",data->cfgtype);
+	switch(data->cfgtype){
+		case SEN_CONFIG_POWER_ON:
+			if (!ov13850_liszt_power_on) {
+				ret = si->vtbl->power_up(si);
+				ov13850_liszt_power_on = true;
+			}
+			break;
+		case SEN_CONFIG_POWER_OFF:
+			if (ov13850_liszt_power_on) {
+				ret = si->vtbl->power_down(si);
+				ov13850_liszt_power_on = false;
+			}
+			break;
+		case SEN_CONFIG_WRITE_REG:
+
+			break;
+		case SEN_CONFIG_READ_REG:
+
+			break;
+		case SEN_CONFIG_WRITE_REG_SETTINGS:
+
+			break;
+		case SEN_CONFIG_READ_REG_SETTINGS:
+
+			break;
+		case SEN_CONFIG_ENABLE_CSI:
+			if(!csi_enable)
+			{
+				ret = si->vtbl->csi_enable(si);
+				csi_enable = true;
+			}
+			break;
+		case SEN_CONFIG_DISABLE_CSI:
+			if(csi_enable)
+			{
+				ret = si->vtbl->csi_disable(si);
+				csi_enable = false;
+			}
+			break;
+		case SEN_CONFIG_MATCH_ID:
+			ret = si->vtbl->match_id(si,argp);
+			break;
+		default:
+			break;
+	}
+	cam_debug("%s exit",__func__);
+	return ret;
+}
+
+static int32_t
+ov13850_liszt_platform_probe(
+        struct platform_device* pdev)
+{
+	int rc = 0;
+	cam_notice("enter %s",__func__);
+	ov13850_liszt_pdev = pdev;
+	if (pdev->dev.of_node) {
+		rc = hw_sensor_get_dt_data(pdev, &s_ov13850_liszt);
+		if (rc < 0) {
+			cam_err("%s failed line %d\n", __func__, __LINE__);
+			goto ov13850_liszt_sensor_probe_fail;
+		}
+	} else {
+		cam_err("%s ov13850_liszt of_node is NULL.\n", __func__);
+		goto ov13850_liszt_sensor_probe_fail;
+	}
+
+	rc = hwsensor_register(pdev, &s_ov13850_liszt.intf);
+ov13850_liszt_sensor_probe_fail:
+	return rc;
+}
+
+static int __init
+ov13850_liszt_init_module(void)
+{
+    cam_notice("enter %s",__func__);
+     return platform_driver_probe(&s_ov13850_liszt_driver,
+            ov13850_liszt_platform_probe);
+
+}
+
+static void __exit
+ov13850_liszt_exit_module(void)
+{
+    hwsensor_unregister(&s_ov13850_liszt.intf);
+    platform_driver_unregister(&s_ov13850_liszt_driver);
+}
+
+module_init(ov13850_liszt_init_module);
+module_exit(ov13850_liszt_exit_module);
+MODULE_DESCRIPTION("ov13850_liszt");
+MODULE_LICENSE("GPL v2");
+

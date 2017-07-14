@@ -1,0 +1,15 @@
+/*
+ *  Copyright (C) 2014 Hisilicon Ltd.
+ *  Author: Bintian Wang <bintian.wang@huawei.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 2 as
+ *  publishhed by the Free Software Foundation.
+ */
+
+
+/include/ "hi6220_cs_udp_ddr2_config.dtsi"
+/ {
+	hisi,boardid = <0 0 5 4>;
+	hisi,boardname = "hi6220_cs_udp_dsds_ddr2";
+};

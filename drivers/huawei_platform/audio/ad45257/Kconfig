@@ -1,0 +1,5 @@
+config AD45257
+    tristate "AD45257 Driver"
+	default n
+	help
+		Say Y to enable AD45257 PA Support

@@ -1,0 +1,8 @@
+/{
+    antenna_board_detect:antenna_board_detect{
+        compatible = "huawei,antenna_board_detect";
+        antenna_board_adc_channel = <5>;
+        antenna_board_match_range = <820 975>;
+        status = "disabled";
+    };
+};
