@@ -142,7 +142,6 @@ static int ion_heap_clear_pages(struct page **pages, int num, pgprot_t pgprot)
 	return 0;
 }
 
-/* modified by l00196665, for DTS2014060904376 */
 #if 0
 
 int ion_heap_sglist_zero(struct scatterlist *sgl, unsigned int nents,
@@ -405,9 +404,8 @@ struct ion_heap *ion_heap_create(struct ion_platform_heap *heap_data)
 
 	switch (heap_data->type) {
 	case ION_HEAP_TYPE_SYSTEM_CONTIG:
-		pr_err("%s: Heap type is disabled: %d\n", __func__,
-		       heap_data->type);
-		return ERR_PTR(-EINVAL);
+		heap = ion_system_contig_heap_create(heap_data);
+		break;
 	case ION_HEAP_TYPE_SYSTEM:
 		heap = ion_system_heap_create(heap_data);
 		break;
@@ -448,8 +446,7 @@ void ion_heap_destroy(struct ion_heap *heap)
 
 	switch (heap->type) {
 	case ION_HEAP_TYPE_SYSTEM_CONTIG:
-		pr_err("%s: Heap type is disabled: %d\n", __func__,
-		       heap->type);
+		ion_system_contig_heap_destroy(heap);
 		break;
 	case ION_HEAP_TYPE_SYSTEM:
 		ion_system_heap_destroy(heap);
