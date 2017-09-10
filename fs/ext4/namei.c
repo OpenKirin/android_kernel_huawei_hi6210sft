@@ -30,14 +30,6 @@
 #include <linux/time.h>
 #include <linux/fcntl.h>
 #include <linux/stat.h>
-/* BEGIN PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci begin*/
-#ifdef CONFIG_SDCARD_FS_CI_SEARCH
-#include <linux/namei.h>
-#include <linux/dcache.h>
-#endif
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci end*/
-/* END PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
 #include <linux/string.h>
 #include <linux/quotaops.h>
 #include <linux/buffer_head.h>
@@ -1052,25 +1044,10 @@ static inline int search_dirblock(struct buffer_head *bh,
 				  struct inode *dir,
 				  const struct qstr *d_name,
 				  unsigned int offset,
-/* BEGIN PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci begin*/
-#ifdef CONFIG_SDCARD_FS_CI_SEARCH
-				  struct ext4_dir_entry_2 ** res_dir,
-				  char *ci_name_buf)
-#else
 				  struct ext4_dir_entry_2 **res_dir)
-#endif
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci end*/
 {
 	return search_dir(bh, bh->b_data, dir->i_sb->s_blocksize, dir,
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci begin*/
-#ifdef CONFIG_SDCARD_FS_CI_SEARCH
-			  d_name, offset, res_dir, ci_name_buf);
-#else
 			  d_name, offset, res_dir);
-#endif
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci end*/
-/* END PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
 }
 
 /*
@@ -1161,21 +1138,6 @@ static inline int ext4_match (int len, const char * const name,
 		return 0;
 	return !memcmp(name, de->name, len);
 }
-/* BEGIN PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci begin*/
-#ifdef CONFIG_SDCARD_FS_CI_SEARCH
-static inline int ext4_ci_match (int len, const char * const name,
-			      struct ext4_dir_entry_2 * de)
-{
-	if (len != de->name_len)
-		return 0;
-	if (!de->inode)
-		return 0;
-	return !strncasecmp(name, de->name, len);
-}
-#endif
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci end*/
-/* END PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
 /*
  * Returns 0 if not found, -1 on failure, and 1 on success
  */
@@ -1185,16 +1147,7 @@ int search_dir(struct buffer_head *bh,
 	       struct inode *dir,
 	       const struct qstr *d_name,
 	       unsigned int offset,
-/* BEGIN PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci begin*/
-#ifdef CONFIG_SDCARD_FS_CI_SEARCH
-	       struct ext4_dir_entry_2 **res_dir,
-               char *ci_name_buf)
-#else
 	       struct ext4_dir_entry_2 **res_dir)
-#endif
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci end*/
-/* END PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
 {
 	struct ext4_dir_entry_2 * de;
 	char * dlimit;
@@ -1207,33 +1160,6 @@ int search_dir(struct buffer_head *bh,
 	while ((char *) de < dlimit) {
 		/* this code is executed quadratically often */
 		/* do minimal checking `by hand' */
-/* BEGIN PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci begin*/
-#ifdef CONFIG_SDCARD_FS_CI_SEARCH
-		if ((char *) de + namelen <= dlimit) {
-			if (ci_name_buf) {
-				if (ext4_ci_match (namelen, name, de)) {
-					/* found a match - just to be sure, do a full check */
-                                        if (ext4_check_dir_entry(dir, NULL, de, bh, bh->b_data,
-						 bh->b_size, offset))
-						return -1;
-					*res_dir = de;
-					memcpy(ci_name_buf, de->name, namelen);
-					ci_name_buf[namelen] = '\0';
-					return 1;
-				}
-			} else {
-				if (ext4_match (namelen, name, de)) {
-					/* found a match - just to be sure, do a full check */
-                                        if (ext4_check_dir_entry(dir, NULL, de, bh, bh->b_data,
-						 bh->b_size, offset))
-						return -1;
-					*res_dir = de;
-					return 1;
-				}
-			}
-		}
-#else
 		if ((char *) de + namelen <= dlimit &&
 		    ext4_match (namelen, name, de)) {
 			/* found a match - just to be sure, do a full check */
@@ -1243,9 +1169,6 @@ int search_dir(struct buffer_head *bh,
 			*res_dir = de;
 			return 1;
 		}
-#endif
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci end*/
-/* END PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
 		/* prevent looping on a bad block */
 		de_len = ext4_rec_len_from_disk(de->rec_len,
 						dir->i_sb->s_blocksize);
@@ -1284,22 +1207,10 @@ static int is_dx_internal_node(struct inode *dir, ext4_lblk_t block,
  * The returned buffer_head has ->b_count elevated.  The caller is expected
  * to brelse() it when appropriate.
  */
-/* BEGIN PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci begin*/
-#ifdef CONFIG_SDCARD_FS_CI_SEARCH
-static struct buffer_head * ext4_find_entry_ci (struct inode *dir,
-					const struct qstr *d_name,
-					struct ext4_dir_entry_2 ** res_dir,
-                                        int *inlined,
-					char *ci_name_buf)
-#else
 static struct buffer_head * ext4_find_entry (struct inode *dir,
 					const struct qstr *d_name,
 					struct ext4_dir_entry_2 **res_dir,
 					int *inlined)
-#endif
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci end*/
-/* END PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
 {
 	struct super_block *sb;
 	struct buffer_head *bh_use[NAMEI_RA_SIZE];
@@ -1324,15 +1235,7 @@ static struct buffer_head * ext4_find_entry (struct inode *dir,
 	if (ext4_has_inline_data(dir)) {
 		int has_inline_data = 1;
 		ret = ext4_find_inline_entry(dir, d_name, res_dir,
-/* BEGIN PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci begin*/
-#ifdef CONFIG_SDCARD_FS_CI_SEARCH
-                                             &has_inline_data, ci_name_buf);
-#else
 					     &has_inline_data);
-#endif
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci end*/
-/* END PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
 		if (has_inline_data) {
 			if (inlined)
 				*inlined = 1;
@@ -1350,17 +1253,8 @@ static struct buffer_head * ext4_find_entry (struct inode *dir,
 		nblocks = 1;
 		goto restart;
 	}
-/* BEGIN PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci begin*/
 /* case insensitive conflicts with dx, so skip it. */
-#ifdef CONFIG_SDCARD_FS_CI_SEARCH
-        if ((!ci_name_buf) &&
-            (is_dx(dir))) {
-#else
 	if (is_dx(dir)) {
-#endif
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci end*/
-/* END PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
 		bh = ext4_dx_find_entry(dir, d_name, res_dir, &err);
 		/*
 		 * On success, or if the error was file not found,
@@ -1425,18 +1319,8 @@ restart:
 			goto next;
 		}
 		set_buffer_verified(bh);
-/* BEGIN PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci begin*/
-#ifdef CONFIG_SDCARD_FS_CI_SEARCH
-		i = search_dirblock(bh, dir, d_name,
-			    block << EXT4_BLOCK_SIZE_BITS(sb), res_dir,
-			    ci_name_buf);
-#else
 		i = search_dirblock(bh, dir, d_name,
 			    block << EXT4_BLOCK_SIZE_BITS(sb), res_dir);
-#endif
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci end*/
-/* END PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
 		if (i == 1) {
 			EXT4_I(dir)->i_dir_start_lookup = block;
 			ret = bh;
@@ -1468,19 +1352,7 @@ cleanup_and_exit:
 		brelse(bh_use[ra_ptr]);
 	return ret;
 }
-/* BEGIN PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci begin*/
-#ifdef CONFIG_SDCARD_FS_CI_SEARCH
-static inline struct buffer_head * ext4_find_entry (struct inode *dir,
-                                                    const struct qstr *d_name,
-                                                    struct ext4_dir_entry_2 ** res_dir,
-                                                    int *inlined)
-{
-    return ext4_find_entry_ci(dir, d_name, res_dir, inlined, NULL);
-}
-#endif
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci end*/
-/* END PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
+
 static struct buffer_head * ext4_dx_find_entry(struct inode *dir, const struct qstr *d_name,
 		       struct ext4_dir_entry_2 **res_dir, int *err)
 {
@@ -1500,19 +1372,9 @@ static struct buffer_head * ext4_dx_find_entry(struct inode *dir, const struct q
 			*err = PTR_ERR(bh);
 			goto errout;
 		}
-/* BEGIN PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci begin*/
-#ifdef CONFIG_SDCARD_FS_CI_SEARCH
-		retval = search_dirblock(bh, dir, d_name,
-			    block << EXT4_BLOCK_SIZE_BITS(sb), res_dir,
-			    NULL);
-#else
 		retval = search_dirblock(bh, dir, d_name,
 					 block << EXT4_BLOCK_SIZE_BITS(sb),
 					 res_dir);
-#endif
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci end*/
-/* END PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
 		if (retval == 1) { 	/* Success! */
 			dx_release(frames);
 			return bh;
@@ -1547,30 +1409,10 @@ static struct dentry *ext4_lookup(struct inode *dir, struct dentry *dentry, unsi
 	struct inode *inode;
 	struct ext4_dir_entry_2 *de;
 	struct buffer_head *bh;
-/* BEGIN PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci begin*/
-#ifdef CONFIG_SDCARD_FS_CI_SEARCH
-	struct qstr ci_name;
-	char ci_name_buf[EXT4_NAME_LEN+1];
-#endif
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci end*/
-/* END PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
 
 	if (dentry->d_name.len > EXT4_NAME_LEN)
 		return ERR_PTR(-ENAMETOOLONG);
-/* BEGIN PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci begin*/
-#ifdef CONFIG_SDCARD_FS_CI_SEARCH
-	ci_name_buf[0] = '\0';
-	if (flags & LOOKUP_CASE_INSENSITIVE)
-                bh = ext4_find_entry_ci(dir, &dentry->d_name, &de, NULL, ci_name_buf);
-	else
-                bh = ext4_find_entry(dir, &dentry->d_name, &de, NULL);
-#else
 	bh = ext4_find_entry(dir, &dentry->d_name, &de, NULL);
-#endif
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci end*/
-/* END PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
 	inode = NULL;
 	if (bh) {
 		__u32 ino = le32_to_cpu(de->inode);
@@ -1593,20 +1435,7 @@ static struct dentry *ext4_lookup(struct inode *dir, struct dentry *dentry, unsi
 			return ERR_PTR(-EIO);
 		}
 	}
-/* BEGIN PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci begin*/
-#ifdef CONFIG_SDCARD_FS_CI_SEARCH
-	if (ci_name_buf[0] != '\0') {
-		ci_name.name = ci_name_buf;
-		ci_name.len = dentry->d_name.len;
-		return d_add_ci(dentry, inode, &ci_name);
-	} else
-		return d_splice_alias(inode, dentry);
-#else
 	return d_splice_alias(inode, dentry);
-#endif
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci end*/
-/* END PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
 }
 
 

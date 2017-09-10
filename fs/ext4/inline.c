@@ -1622,16 +1622,7 @@ out:
 struct buffer_head *ext4_find_inline_entry(struct inode *dir,
 					const struct qstr *d_name,
 					struct ext4_dir_entry_2 **res_dir,
-/* BEGIN PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci begin*/
-#ifdef CONFIG_SDCARD_FS_CI_SEARCH
-                                        int *has_inline_data,
-                                        char* ci_name_buf)
-#else
 					int *has_inline_data)
-#endif
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci end*/
-/* END PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
 {
 	int ret;
 	struct ext4_iloc iloc;
@@ -1651,15 +1642,7 @@ struct buffer_head *ext4_find_inline_entry(struct inode *dir,
 						EXT4_INLINE_DOTDOT_SIZE;
 	inline_size = EXT4_MIN_INLINE_DATA_SIZE - EXT4_INLINE_DOTDOT_SIZE;
 	ret = search_dir(iloc.bh, inline_start, inline_size,
-/* BEGIN PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci begin*/
-#ifdef CONFIG_SDCARD_FS_CI_SEARCH
-			 dir, d_name, 0, res_dir, ci_name_buf);
-#else
                          dir, d_name, 0, res_dir);
-#endif
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci end*/
-/* END PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
 	if (ret == 1)
 		goto out_find;
 	if (ret < 0)
@@ -1672,15 +1655,7 @@ struct buffer_head *ext4_find_inline_entry(struct inode *dir,
 	inline_size = ext4_get_inline_size(dir) - EXT4_MIN_INLINE_DATA_SIZE;
 
 	ret = search_dir(iloc.bh, inline_start, inline_size,
-/* BEGIN PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci begin*/
-#ifdef CONFIG_SDCARD_FS_CI_SEARCH
-			 dir, d_name, 0, res_dir, ci_name_buf);
-#else
                          dir, d_name, 0, res_dir);
-#endif
-/* DTS2014061003046 2014/6/11 h00206996 sdcardfs ci end*/
-/* END PN:DTS2014072604297  , Modified by d00168349, 2014/07/26 */
 	if (ret == 1)
 		goto out_find;
 
