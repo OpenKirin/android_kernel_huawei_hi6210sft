@@ -9,7 +9,7 @@
 #include <linux/syscore_ops.h>
 #include <linux/mutex.h>
 #include <linux/module.h>
-#include <linux/interrupt.h>
+#include <linux/suspend.h>
 #include <linux/wakeup_reason.h>
 
 static LIST_HEAD(syscore_ops_list);
@@ -53,9 +53,8 @@ int syscore_suspend(void)
 	pr_debug("Checking wakeup interrupts\n");
 
 	/* Return error code if there are any wakeup interrupts pending. */
-	ret = check_wakeup_irqs();
-	if (ret)
-		return ret;
+	if (pm_wakeup_pending())
+		return -EBUSY;
 
 	WARN_ONCE(!irqs_disabled(),
 		"Interrupts enabled before system core suspend.\n");

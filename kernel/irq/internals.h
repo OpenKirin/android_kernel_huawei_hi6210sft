@@ -188,9 +188,11 @@ static inline bool irqd_has_set(struct irq_data *d, unsigned int mask)
 }
 
 #ifdef CONFIG_PM_SLEEP
+bool irq_pm_check_wakeup(struct irq_desc *desc);
 void irq_pm_install_action(struct irq_desc *desc, struct irqaction *action);
 void irq_pm_remove_action(struct irq_desc *desc, struct irqaction *action);
 #else
+static inline bool irq_pm_check_wakeup(struct irq_desc *desc) { return false; }
 static inline void
 irq_pm_install_action(struct irq_desc *desc, struct irqaction *action) { }
 static inline void
