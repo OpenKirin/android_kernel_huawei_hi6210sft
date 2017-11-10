@@ -900,8 +900,6 @@ static int print_wakeup_source_stats(struct seq_file *m,
        #endif  
         /* DTS2014070101273  zhangran 20140701 end > */  
 
-	int ret;
-
 	spin_lock_irqsave(&ws->lock, flags);
 
 	total_time = ws->total_time;
@@ -940,7 +938,7 @@ static int print_wakeup_source_stats(struct seq_file *m,
 	}
       /* < DTS2014070101273  zhangran 20140701 begin */  
       #if 1//def CONFIG_HUAWEI_KERNEL  
-      ret = seq_printf(m, "%-12s\t%lu\t\t%lu\t\t%lu\t\t%lu\t\t"  
+       seq_printf(m, "%-12s\t%lu\t\t%lu\t\t%lu\t\t%lu\t\t"  
                     "%lld\t\t%lld\t\t%lld\t\t%lld\t\t%lld\t\t%lld\n",  
                     ws->name, active_count, ws->event_count,  
                     ws->wakeup_count, ws->expire_count,  
@@ -949,7 +947,7 @@ static int print_wakeup_source_stats(struct seq_file *m,
                     ktime_to_ms(prevent_sleep_time),  
                     ktime_to_ms(screen_off_time));  
        #else  
-	ret = seq_printf(m, "%-32s\t%-8lu\t%-8lu\t%-8lu\t%-8lu\t"
+	seq_printf(m, "%-32s\t%-8lu\t%-8lu\t%-8lu\t%-8lu\t"
 			"%-8lld\t%-8lld\t%-8lld\t%-8lld\t%-8lld\n",
 			ws->name, active_count, ws->event_count,
 			ws->wakeup_count, ws->expire_count,
@@ -960,7 +958,7 @@ static int print_wakeup_source_stats(struct seq_file *m,
        /* DTS2014070101273  zhangran 20140701 end > */ 
 	spin_unlock_irqrestore(&ws->lock, flags);
 
-	return ret;
+	return 0;
 }
              /* < DTS2016041200239   hWX281624 20160412 begin */  
 /**
