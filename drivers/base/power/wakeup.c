@@ -858,7 +858,7 @@ bool pm_get_wakeup_count(unsigned int *count, bool block)
 			split_counters(&cnt, &inpr);
 			if (inpr == 0 || signal_pending(current))
 				break;
-			print_active_wakeup_sources();
+
 			schedule();
 		}
 		finish_wait(&wakeup_count_wait_queue, &wait);
