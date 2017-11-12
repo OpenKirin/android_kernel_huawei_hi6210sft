@@ -1,2 +1,1 @@
-
-source "drivers/gpu/ump/Kconfig"
+source "drivers/gpu/arm/Kconfig"
