@@ -133,7 +133,7 @@ static int mali_kernel_memory_cpu_page_fault_handler(struct vm_area_struct *vma,
 	return VM_FAULT_SIGBUS;
 }
 
-static struct vm_operations_struct mali_kernel_vm_ops = {
+static const struct vm_operations_struct mali_kernel_vm_ops = {
 	.open = mali_mem_vma_open,
 	.close = mali_mem_vma_close,
 	.fault = mali_kernel_memory_cpu_page_fault_handler

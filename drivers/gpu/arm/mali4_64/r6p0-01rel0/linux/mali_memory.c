@@ -125,7 +125,7 @@ static int mali_mem_vma_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 	return VM_FAULT_NOPAGE;
 }
 
-static struct vm_operations_struct mali_kernel_vm_ops = {
+static const struct vm_operations_struct mali_kernel_vm_ops = {
 	.open = mali_mem_vma_open,
 	.close = mali_mem_vma_close,
 	.fault = mali_mem_vma_fault,

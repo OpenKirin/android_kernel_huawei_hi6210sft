@@ -1172,7 +1172,7 @@ void shared_vma_close(struct vm_area_struct *vma){
 	mutex_unlock(&tc_ns_dev_list.dev_lock);
 }
 
-static struct vm_operations_struct shared_remap_vm_ops = {
+static const struct vm_operations_struct shared_remap_vm_ops = {
     .open = shared_vma_open,
     .close = shared_vma_close,
 };

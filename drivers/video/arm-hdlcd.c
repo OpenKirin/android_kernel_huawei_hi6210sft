@@ -387,7 +387,7 @@ static void hdlcd_mmap_close(struct vm_area_struct *vma)
 {
 }
 
-static struct vm_operations_struct hdlcd_mmap_ops = {
+static const struct vm_operations_struct hdlcd_mmap_ops = {
 	.open	= hdlcd_mmap_open,
 	.close	= hdlcd_mmap_close,
 };
