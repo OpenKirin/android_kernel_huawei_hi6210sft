@@ -19,6 +19,7 @@
 #include <linux/mutex.h>
 #include <linux/gfp.h>
 #include <linux/suspend.h>
+#include <asm-generic/processor.h>
 
 #include "smpboot.h"
 
@@ -327,7 +328,7 @@ static int __ref _cpu_down(unsigned int cpu, int tasks_frozen)
 	 * Wait for the stop thread to go away.
 	 */
 	while (!idle_cpu(cpu))
-		cpu_relax();
+		cpu_read_relax();
 
 	/* This actually kills the CPU. */
 	__cpu_die(cpu);
