@@ -56,10 +56,12 @@
 #define EPOLL_PACKED
 #endif
 
+#ifdef __KERNEL__
 struct epoll_event {
 	__u32 events;
 	__u64 data;
 } EPOLL_PACKED;
+#endif /* __KERNEL__ */
 
 #ifdef CONFIG_PM_SLEEP
 static inline void ep_take_care_of_epollwakeup(struct epoll_event *epev)
